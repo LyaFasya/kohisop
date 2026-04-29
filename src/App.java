@@ -181,8 +181,18 @@ public class App {
             double pajak = ip.getPajak();
             double subtotal = ip.getTotalDenganPajak();
             
-            System.out.printf("- %s (x%d) : Rp %,d + Pajak Rp %,.0f = Rp %,.0f%n", 
-                m.getNamaMenu(), qty, totalHargaItem, pajak, subtotal);
+            int persen = (totalHargaItem > 0) ? (int) Math.round(Math.abs(pajak) / totalHargaItem * 100) : 0;
+
+            if (pajak < 0) {
+                System.out.printf("- %s (x%d) : Rp %,d - Diskon %d%% Rp %,.0f = Rp %,.0f%n",
+                    m.getNamaMenu(), qty, totalHargaItem, persen, -pajak, subtotal);
+            } else if (pajak > 0) {
+                System.out.printf("- %s (x%d) : Rp %,d + Pajak %d%% Rp %,.0f = Rp %,.0f%n",
+                    m.getNamaMenu(), qty, totalHargaItem, persen, pajak, subtotal);
+            } else {
+                System.out.printf("- %s (x%d) : Rp %,d (Bebas Pajak)%n",
+                    m.getNamaMenu(), qty, totalHargaItem);
+            }
             
             totalPajak += pajak;
             totalSementara += subtotal;
