@@ -42,7 +42,7 @@ public class App {
         }
 
         if (kohiSop.jumlahJenisDipesan("Minuman") >= KohiSop.MAX_JENIS_PER_KATEGORI) {
-            System.out.println("Udah mentok 5 jenis minuman nih.");
+            System.out.println("Maksimal 5 jenis minuman ya.");
         }
         System.out.println("\nPilih Makanan");
         System.out.println("Maks " + KohiSop.MAX_JENIS_PER_KATEGORI + " jenis makanan.");
@@ -75,7 +75,7 @@ public class App {
         }
 
         if (kohiSop.jumlahJenisDipesan("Makanan") >= KohiSop.MAX_JENIS_PER_KATEGORI) {
-            System.out.println("Udah mentok 5 jenis makanan nih.");
+            System.out.println("Maksimal 5 jenis makanan ya.");
         }
         if (kohiSop.pesananKosong()) {
             System.out.println("Kamu belum pesan apa-apa. Keluar program...");
@@ -100,7 +100,7 @@ public class App {
 
             // batal
             if (inputQty.equalsIgnoreCase("CC")) {
-                System.out.println("Batal pesan deh.");
+                System.out.println("Pesanan dibatalkan.");
                 return;
             }
 
@@ -125,26 +125,26 @@ public class App {
                     int qty = Integer.parseInt(inputQty);
 
                     if (qty < 0) {
-                        System.out.print("Jangan negatif dong, masukin lagi: ");
+                        System.out.print("Jangan masukkan angka negatif ya, masukkan lagi: ");
                     } else if (qty == 0) {
                         ip.setKuantitas(0);
                         System.out.println("=> " + menu.getNamaMenu() + " diskip.");
                         valid = true;
                     } else if (qty > maxQty) {
-                        System.out.printf("Maksimal cuma %d porsi. Masukin lagi: ", maxQty);
+                        System.out.printf("Maksimal hanya %d porsi, masukkan lagi: ", maxQty);
                     } else {
                         ip.setKuantitas(qty);
                         System.out.printf("=> %s x%d%n", menu.getNamaMenu(), qty);
                         valid = true;
                     }
                 } catch (NumberFormatException e) {
-                    System.out.print("Harus angka ya! Masukin lagi: ");
+                    System.out.print("Harus masukkan angka ya! Masukkan lagi: ");
                 }
 
                 if (!valid) {
                     inputQty = sc.nextLine().trim();
                     if (inputQty.equalsIgnoreCase("CC")) {
-                        System.out.println("Batal pesan deh.");
+                        System.out.println("Pesanan dibatalkan.");
                         return;
                     }
                     if (inputQty.equalsIgnoreCase("S") || inputQty.equals("0")) {
@@ -171,19 +171,26 @@ public class App {
 
         // detail pesanan dan hitung total sementara
         System.out.println("\n[Detail Pesanan]");
-        double totalPesanan= 0;
+        double totalSementara = 0;
+        double totalPajak = 0;
         for (int i = 0; i < kohiSop.getJumlahPesanan(); i++) {
             ItemPesanan ip = kohiSop.getPesanan(i);
             Menu m = ip.getMenu();
             int qty = ip.getKuantitas();
             int totalHargaItem = ip.getTotalHarga();
+            double pajak = ip.getPajak();
+            double subtotal = ip.getTotalDenganPajak();
             
-            System.out.printf("- %s (x%d) : Rp %,d%n", 
-                m.getNamaMenu(), qty, totalHargaItem);
-            totalPesanan += totalHargaItem;
+            System.out.printf("- %s (x%d) : Rp %,d + Pajak Rp %,.0f = Rp %,.0f%n", 
+                m.getNamaMenu(), qty, totalHargaItem, pajak, subtotal);
+            
+            totalPajak += pajak;
+            totalSementara += subtotal;
         }
         System.out.println("--------------------------------------------------");
-        System.out.printf("Total Pesanan : Rp %,.0f%n", totalPesanan);
+        System.out.printf("Total Pesanan : Rp %,.0f%n", totalSementara - totalPajak);
+        System.out.printf("Total Pajak   : Rp %,.0f%n", totalPajak);
+        System.out.printf("Total Tagihan : Rp %,.0f%n", totalSementara);
 
         // cetak kuitansi
         Kuitansi.cetak(kohiSop);

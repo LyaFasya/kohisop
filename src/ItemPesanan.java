@@ -18,4 +18,10 @@ public class ItemPesanan {
     public int getTotalHarga() {
         return menu.getHarga() * kuantitas;
     }
+    public double getPajak() {
+        return Pajak.hitungPajak(menu, getTotalHarga());
+    }
+    public double getTotalDenganPajak() {
+        return getTotalHarga() + getPajak();
+    }
 }
