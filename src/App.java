@@ -202,7 +202,69 @@ public class App {
         System.out.printf("Total Pajak   : Rp %,.0f%n", totalPajak);
         System.out.printf("Total Tagihan : Rp %,.0f%n", totalSementara);
 
+        // pilih channel pembayaran
+        System.out.println("\n[Pilih Channel Pembayaran]");
+        System.out.println("1. Tunai (Tanpa diskon)");
+        System.out.println("2. QRIS (Diskon 5%)");
+        System.out.println("3. eMoney (Diskon 7%, Biaya Admin 2000 IDR)");
+
+        ChannelPembayaran channel = null;
+        while (channel == null) {
+            System.out.print("Pilihan (1/2/3) atau 'CC' untuk batal: ");
+            String inputChannel = sc.nextLine().trim().toUpperCase();
+
+            if (inputChannel.equals("CC")) {
+                System.out.println("Pesanan dibatalkan.");
+                return;
+            }
+
+            switch (inputChannel) {
+                case "1":
+                    channel = new Tunai();
+                    break;
+                case "2":
+                    channel = new QRIS();
+                    break;
+                case "3":
+                    channel = new Emoney();
+                    break;
+                default:
+                    System.out.println("Pilihan tidak valid.");
+            }
+        }
+
+        // cek saldo jika perlu
+        if (channel.butuhCekSaldo()) {
+            double diskon = channel.hitungDiskon(totalSementara);
+            double admin = channel.getBiayaAdmin();
+            double totalAkhir = totalSementara - diskon + admin;
+
+            boolean saldoCukup = false;
+            while (!saldoCukup) {
+                System.out.printf("Total tagihan akhir Anda: Rp %,.0f.%n", totalAkhir);
+                System.out.print("Masukkan jumlah saldo Anda (atau 'CC' untuk batal): ");
+                String inputSaldo = sc.nextLine().trim().toUpperCase();
+
+                if (inputSaldo.equals("CC")) {
+                    System.out.println("Pesanan dibatalkan.");
+                    return;
+                }
+
+                try {
+                    double saldo = Double.parseDouble(inputSaldo);
+                    if (saldo < totalAkhir) {
+                        System.out.println("Saldo tidak mencukupi!");
+                    } else {
+                        System.out.println("=> Saldo mencukupi. Memproses pembayaran...");
+                        saldoCukup = true;
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Harap masukkan angka yang valid.");
+                }
+            }
+        }
+
         // cetak kuitansi
-        Kuitansi.cetak(kohiSop);
+        Kuitansi.cetak(kohiSop,channel);
     }
 }
