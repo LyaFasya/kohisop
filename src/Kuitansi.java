@@ -1,5 +1,5 @@
 public class Kuitansi {
-    public static void cetak(KohiSop kohiSop, ChannelPembayaran channel) {
+    public static void cetak(KohiSop kohiSop, ChannelPembayaran channel, MataUang mataUang) {
         System.out.println("\n=======================================================");
         System.out.println("                   KUITANSI PEMBELIAN");
         System.out.println("=======================================================");
@@ -36,11 +36,14 @@ public class Kuitansi {
         }
         if (!hasMinuman)
             System.out.println("- Tidak ada minuman yang dipesan.\n");
+
         double totalHargaDenganPajak = totalHargaLuarPajak + totalPajakKeseluruhan;
 
         double diskon = channel.hitungDiskon(totalHargaDenganPajak);
         double admin = channel.getBiayaAdmin();
-        totalHargaDenganPajak = totalHargaDenganPajak - diskon + admin;
+        double totalAkhirIDR = totalHargaDenganPajak - diskon + admin;
+
+        double totalAkhirKonversi = mataUang.konversiDariIDR(totalAkhirIDR);
 
         System.out.println("-------------------------------------------------------");
         System.out.printf("%-36s : Rp %,12.0f%n", "Total Harga (di luar pajak)", totalHargaLuarPajak);
@@ -50,7 +53,13 @@ public class Kuitansi {
         System.out.printf("%-36s : Rp %,12.0f%n", "Diskon (" + channel.getNama() + ")", diskon);
         System.out.printf("%-36s : Rp %,12.0f%n", "Biaya Admin", admin);
         System.out.println("-------------------------------------------------------");
-        System.out.printf("%-36s : Rp %,12.0f%n", "Total Tagihan Akhir", totalHargaDenganPajak);
+        System.out.printf("%-36s : Rp %,12.0f%n", "Total Tagihan Akhir (IDR)", totalAkhirIDR);
+
+        if (!mataUang.getKode().equals("IDR")) {
+            System.out.printf("%-36s : %s %,12.2f%n", "Total Tagihan (" + mataUang.getKode() + ")", mataUang.getKode(),
+                    totalAkhirKonversi);
+        }
+
         System.out.println("=======================================================");
         System.out.println("       Terima kasih dan silakan datang kembali!        ");
         System.out.println("=======================================================");

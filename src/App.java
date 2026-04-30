@@ -263,8 +263,47 @@ public class App {
                 }
             }
         }
+        
+        // pilih mata uang
+        System.out.println("\nPilih Mata Uang Pembayaran");
+        System.out.println("1. IDR (Default)");
+        System.out.println("2. USD (1 USD = 15 IDR)");
+        System.out.println("3. JPY (10 JPY = 1 IDR)");
+        System.out.println("4. MYR (1 MYR = 4 IDR)");
+        System.out.println("5. EUR (1 EUR = 14 IDR)");
+
+        MataUang mataUang = null;
+        while (mataUang == null) {
+            System.out.print("Pilihan (1-5) atau 'CC' untuk batal: ");
+            String inputUang = sc.nextLine().trim().toUpperCase();
+
+            if (inputUang.equals("CC")) {
+                System.out.println("Pesanan dibatalkan.");
+                return;
+            }
+
+            switch (inputUang) {
+                case "1":
+                    mataUang = new IDR();
+                    break;
+                case "2":
+                    mataUang = new USD();
+                    break;
+                case "3":
+                    mataUang = new JPY();
+                    break;
+                case "4":
+                    mataUang = new MYR();
+                    break;
+                case "5":
+                    mataUang = new EUR();
+                    break;
+                default:
+                    System.out.println("Pilihan tidak valid.");
+            }
+        }
 
         // cetak kuitansi
-        Kuitansi.cetak(kohiSop,channel);
+        Kuitansi.cetak(kohiSop, channel, mataUang);
     }
 }
